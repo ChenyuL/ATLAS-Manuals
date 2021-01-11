@@ -1,0 +1,44 @@
+---
+title: "Create_Pathway"
+output: html_document
+---
+**This tutorial will guide you to create clinical pathway in Garibaldi’s paper using ATLAS**   
+
+### 1. Collect all cohorts need to be used in clinical pathway analysis   
+Event cohorts may used in clinical pathway analysis   
+```{r, echo=FALSE, fig.cap="event cohorts", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/event cohorts.png")
+``` 
+
+### 2. Create new Cohort Pathways  
+#### 2.1 click create new cohort pathway
+```{r, echo=FALSE, fig.cap="new cohort pathway", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Pathway/create new pathway.png")
+```   
+
+#### 2.2 Import Cohorts  
+click import  
+```{r, echo=FALSE, fig.cap="click import", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Pathway/click import.png")
+```     
+
+choose the target cohorts  
+
+```{r, echo=FALSE, fig.cap="click import", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Pathway/import target cohorts.png")
+```      
+  
+import event cohorts  
+```{r, echo=FALSE, fig.cap="Import event cohorts", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Pathway/Event cohorts.png")
+```    
+#### 2.3 Edit Analysis settings  
+```{r, echo=FALSE, fig.cap="Edit Analysis settings", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Pathway/Analysis settings.png")
+```      
+### 3. Execute the pathway analysis  
+**Excutions->Generate->View reports**  
+
+```{r, echo=FALSE, fig.cap="View reports", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Pathway/execute.png")
+```    

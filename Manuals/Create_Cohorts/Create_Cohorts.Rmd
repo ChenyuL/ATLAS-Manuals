@@ -1,0 +1,175 @@
+---
+title: "Create Cohorts"
+output: html_document
+---
+
+**This tutorial will guide you to create cohorts in Garibaldi’s paper using ATLAS**  
+Patient Trajectories Among Persons Hospitalized for COVID-19
+A Cohort Study
+https://www.acpjournals.org/doi/10.7326/M20-3905
+
+      
+>cohort as a set of persons who satisfy one or more inclusion criteria for a duration of time. The term cohort is often interchanged with the term phenotype. riation in the data while also allowing for identification of potentially missing values.   ---Book of OHDSI Chapter 10 Define Cohorts
+
+When creating a cohort definition, you need to ask yourself the following questions:  
+
+* What initial event defines the time of cohort entry?  
+* What inclusion criteria are applied to the initial events?  
+* What defines the time of cohort exit?  
+
+### 1. Key Compnents in cohorts definition
+The standard components we use to assemble these criteria are:  
+
+**Domain** : The CDM domain(s) where the data are stored (e.g. “Procedure Occurrence”, “Drug Exposure”) define the type of clinical information and the allowable concepts that can be represented inside that CDM table. Domains are discussed in more detail in Section 4.2.4.
+
+**Concept set**: A data-agnostic expression that defines one or more Standard Concepts encompassing the clinical entity of interest. These concept sets are interoperable across different observational health data as they represent the standard terms the clinical entity maps to in the Vocabulary. Concept sets are discussed in Section 10.3.
+
+**Domain-specific attribute**: Additional attributes related to the clinical entity of interest (E.g. DAYS_SUPPLY for a DRUG_EXPOSURE, or VALUE_AS_NUMBER or RANGE_HIGH for a MEASUREMENT.)
+
+**Temporal logic**: The time intervals within which the relationship between an inclusion criteria and an event is evaluated (E.g. Indicated condition must occur during 365 days prior to or on exposure start.)
+
+**example**  
+```{r, echo=FALSE, out.width="50%", fig.cap="Logical Diagram of Intended Cohort- Hyptertension", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/CohortPractice.png")
+```  
+
+### 2. Create study cohorts 
+#### 2.1 analyze criteria 
+>Patients: 832 consecutive COVID-19 admissions from 4 March to 24 April 2020, with follow-up through 27 June 2020.  
+
+1. cohort entry event: hospitalized from 2020/03/04-2020/04/24    
+   Sars-cov-2 tested positive (exclude tested negative)  
+   Or  suspected SARS patients have no negative test result    
+2. cohort exit event:  lost/no follow-up through 2020/06/27    
+
+#### 2.2 Create concept sets  
+Cohorts definition from the article:  
+```{r, echo=FALSE, out.width="35%", fig.cap="Definitions of cohorts used in Garibaldi's paper", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/WHO definition.png")
+```
+
+What concept sets do we need ?   
+1. Inpatient   
+2. SARS Covid-19 test (Concepts udner measurement domain)   
+3. Suspected SARS (concepts under Observation domain)    
+4. Severity groups concept sets based on WHO scale   
+
+##### 2.2.1 Create concept sets  
+Under ATLAS->Concept Sets
+Click on New Concept Set, Change the concept set name and click on save. 
+```{r, echo=FALSE,  fig.cap="Create new concept set.1", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/create new concept sets.png")
+```
+Goto ATLAS->Search concept, choose concepts we need  
+```{r, echo=FALSE,  fig.cap="Create new concept set.2", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Create concept sets.png")
+```
+```{r, echo=FALSE,  fig.cap="Create new concept set.3", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/choose concepts you need.png")
+```
+  
+**Follow the WHO scale logic create concept sets:**   
+WHO scale  
+* score 5- concepts of high flow nasal cannula (device domain) & noninvasive ventilation (procedure domain)  
+* score 6- concepts of intubation and mechanical ventilation ( device and procedure domain)  
+* score 7- ECMO & ivpressor & hemodialysis (device and procedure domain)  
+
+**Cohorts sets will be used:**  
+#60 inpatient   
+#18 SARS Covid-19 test  
+#30 suspected SARS  
+#21 [annals]Severe-WHO score 5 High Flow Oxygen & Nippv  
+#23 [annals]Severe-WHO score 6 intubation & mechanial ventilation  
+#68 [annals]Severe-WHO score 7 ivpressor & ECMO & hemodialysis  
+
+##### 2.3 Create cohorts  
+
+```{r, echo=FALSE,  fig.cap="Create new cohort.1", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/NEw_Cohort.png")
+```  
+
+
+##### 2.3.1 Enter cohort entry events
+```{r, echo=FALSE, fig.cap="Create new cohort.2", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Cohort_Entry_Events.png")
+```  
+
+
+```{r, echo=FALSE, fig.cap="Create new cohort.3", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/import new concept set.png")
+```  
+
+```{r, echo=FALSE, fig.cap="Create new cohort.4", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/import concept set.png")
+```  
+
+##### 2.3.2 Enter restrictions
+```{r, echo=FALSE, fig.cap="Create new cohort.5", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Restrict initial events.png")
+```  
+**Note**: Value as concept is positive ( concept_id=45884084), negative (concept_id=45878583)    
+Here we used LONIC code    
+We need to define:   
+study cohorts and mild/severe/death patient cohorts for characteriztaions and incidence rates analysis   
+
+##### 2.3.3 Generate result  
+```{r, echo=FALSE, fig.cap="Create new cohort.6", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Generate result.png")
+```  
+
+#### 2.4 Load existing cohort definitions to ATLAS
+If we already have the cohort definitions .json file (e.g. from github) and want to load it into ATLAS. We could copy the code and paste the code under Cohort Defiinitions-> Export-> JSON-> Reload  
+```{r, echo=FALSE, fig.cap="Load exist definition", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Reload.png")
+```  
+
+
+#### 2.5 Add Inclusion Criteria for different severity groups 
+##### 2.5.1 WHO score 8
+1.Copy cohort [Annals paper]Hospitalized Patient with SARS positive results between 2020/03/04-2020/04/24, add inclusion criteria based on the this cohort.  
+2. Change new cohorts' name and save.  
+3. Add inclusion criteria for WHO score 8 ( Add attribute to group-> add )   
+```{r, echo=FALSE, fig.cap="WHO scale score 8", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Score-8.png")
+```   
+##### 2.5.2 WHO score 5-7
+1.Copy cohort [outcome][Annals paper]Hospitalized Patient with SARS positive results between 2020/03/04-2020/04/24-WHO score 8, add inclusion criteria based on the this cohort.  
+2. Change new cohorts' name and save.  
+3. Add inclusion criteria for WHO score 5-7     
+**logic:**  
+* creating a group for patient who dead first( score 8)  
+* creating a group for score 5-7 procedure/device_exposure criteria  
+* having at least 1 of the procedure/device exposure in predefined concept sets for score 5, 6, 7 respectively    
+* excluding patients in score 8 by adding restriction: having at least 2 of the following criteria  
+```{r, echo=FALSE, fig.cap="WHO scale score 5-7", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/Score 5-7.png")
+``` 
+Check the graphical definition under Cohort Definitions->select one cohort -> Export -> Graphical View  
+
+```{r, echo=FALSE, fig.cap="graphical logic of inclusion criteria", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/WHO score 5-7 graphical logic .png")
+```   
+
+##### 2.5.3 WHO score 3-4 
+
+Patients without exposure to any device/procedure in WHO scoree 5-8 concept sets are in the goupr WHO score 3-4.    
+
+Create cohort  
+1.Copy cohort [outcome][Annals paper]Hospitalized Patient with SARS positive results between 2020/03/04-2020/04/24-WHO score 5-7.  
+2. Change new cohort' name and save.  
+3. Change inclusion criteria for WHO score 5-7: exclude patients dead or had any procedure and device exposure of WHO score 5-7 criteria.  
+
+```{r, echo=FALSE, fig.cap="WHO scale score 3-4 inclusion critreria design", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/WHO score 3-4.png")
+``` 
+   
+**Graphical logic**  
+```{r, echo=FALSE, fig.cap="Graphical logic of WHO score 3-4 inclusion criteria", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/WHO score 3-4 graphical logic.png")
+```   
+### 3. Create event/strata cohorts  
+Using the same steps to create event or strata cohorts may be used in research: 
+e.g. in Cohort Pathways we need follosing cohorts  
+```{r, echo=FALSE, fig.cap="event cohorts", fig.align = 'center'}
+knitr::include_graphics("/Users/chenyuli/OMOP-CROWN/Manuals/Create_Cohorts/event cohorts.png")
+``` 
